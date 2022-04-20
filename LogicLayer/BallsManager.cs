@@ -141,7 +141,7 @@ namespace LogicLayer
                 }
             }
 
-            throw new InvalidDataException("The ball with the given ID not exists");
+            throw new InvalidDataException("The ball with the given ID does not exist");
         }
 
         public void RemoveBallByID(int ID)
@@ -155,7 +155,7 @@ namespace LogicLayer
                 }
             }
 
-            throw new InvalidDataException("The ball with the given ID not exists");
+            throw new InvalidDataException("The ball with the given ID does not exist");
         }
 
         public List<Ball> GetAllBalls()
