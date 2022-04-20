@@ -105,16 +105,16 @@ namespace LogicLayer
             //TODO: add ball radius to condition
             foreach (Ball ball in GetAllBalls())
             {
-                if (ball.XPos + ball.XDirection + ball.Radius < ball.Radius * 2 || ball.XPos + ball.XDirection + ball.Radius > _mapWidth)
+                if (ball.XPos + ball.XMove + ball.Radius < ball.Radius * 2 || ball.XPos + ball.XMove + ball.Radius > _mapWidth)
                 {
-                    ball.XDirection = ball.XDirection * (-1);
+                    ball.XMove = ball.XMove * (-1);
                 }
-                if (ball.YPos + ball.YDirection + ball.Radius < ball.Radius * 2 || ball.YPos + ball.YDirection + ball.Radius > _mapHeight)
+                if (ball.YPos + ball.YMove + ball.Radius < ball.Radius * 2 || ball.YPos + ball.YMove + ball.Radius > _mapHeight)
                 {
-                    ball.YDirection = ball.YDirection * (-1);
+                    ball.YMove = ball.YMove * (-1);
                 }
-                ball.XPos += ball.XDirection;
-                ball.YPos += ball.YDirection;
+                ball.XPos += ball.XMove;
+                ball.YPos += ball.YMove;
             }
         }
 
@@ -141,7 +141,7 @@ namespace LogicLayer
                 }
             }
 
-            throw new InvalidDataException("The ball with the given ID is not in the list");
+            throw new InvalidDataException("The ball with the given ID not exists");
         }
 
         public void RemoveBallByID(int ID)
@@ -155,7 +155,7 @@ namespace LogicLayer
                 }
             }
 
-            throw new InvalidDataException("The ball with the given ID is not in the list");
+            throw new InvalidDataException("The ball with the given ID not exists");
         }
 
         public List<Ball> GetAllBalls()

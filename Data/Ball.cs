@@ -19,7 +19,7 @@ namespace Data
             XMove = xMov;
             YMove = yMov;
             Radius = radius;
-            color = Color.PickColor();
+            color = Color.ChooseColor();
         }
 
         public int GetID()
