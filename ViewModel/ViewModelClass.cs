@@ -24,7 +24,7 @@ namespace Presentation.ViewModel
 
         public ViewModelClass()
         {
-            _width = 1000;
+            _width = 1180;
             _height = 706;
             _numberOfBalls = "";
             _summon = new RelayCommand(Summon, SummonProperties);
