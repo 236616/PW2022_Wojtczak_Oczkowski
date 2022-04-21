@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ViewModel", "ViewModel\View
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "View", "View\View.csproj", "{9E9A2FB1-C927-4F48-8C72-20EDAC34BB00}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogicLayer", "LogicLayer\LogicLayer.csproj", "{093E6477-EA3C-4C1D-A7B7-B3E983196A2B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogicLayer", "LogicLayer\LogicLayer.csproj", "{093E6477-EA3C-4C1D-A7B7-B3E983196A2B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{3935399C-FE0C-4186-B55C-2FB8CAFD594F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,6 +50,11 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{666F92CF-9DC0-4F81-B4A8-25DAC9BBA765} = {3935399C-FE0C-4186-B55C-2FB8CAFD594F}
+		{A0372B9A-89C3-4721-8EB9-93A93A4F4009} = {3935399C-FE0C-4186-B55C-2FB8CAFD594F}
+		{9E9A2FB1-C927-4F48-8C72-20EDAC34BB00} = {3935399C-FE0C-4186-B55C-2FB8CAFD594F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6FA79B0F-3CF8-4A4E-A87E-457F3161B4D9}
