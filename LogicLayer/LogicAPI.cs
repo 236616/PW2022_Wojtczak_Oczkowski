@@ -11,7 +11,7 @@ namespace LogicLayer
         public abstract class BallAPI
         {
             public abstract int GetID();
-
+            public string color { get; set; }
             public static BallAPI CreateBall(int ID, int xPos, int yPos, int radius, int xMov, int yMov)
             {
                 return new Ball(ID, xPos, yPos, radius, xMov, yMov);
@@ -23,8 +23,8 @@ namespace LogicLayer
             public int YMove { get; set; }
 
             public int Radius { get; set; }
-
-            
+            public int XPosition { get; set; }
+            public int YPosition { get; set; }
         }
 
  
