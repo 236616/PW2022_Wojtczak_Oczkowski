@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Data
+namespace LogicLayer
 {
-    public class Color
+    internal class Color
     {
         public static string ChooseColor()
         {

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Data
 {
-    public class ObjectStorage<T>
+    internal class ObjectStorage<T>
     {
         private List<T> _balls = new();
 

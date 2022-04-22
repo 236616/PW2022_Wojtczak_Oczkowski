@@ -1,14 +1,9 @@
 ﻿
-namespace Data
+namespace LogicLayer
 {
-    public class Ball
+    internal class Ball:LogicAPI.BallAPI
     {
         private readonly int _ballID;
-        public int XPos { get; set; }
-        public int YPos { get; set; }
-        public int XMove { get; set; }
-        public int YMove { get; set; }
-        public int Radius { get; set; }
         public string color { get; }
 
         public Ball(int ID, int xPos, int yPos, int radius, int xMov, int yMov)
@@ -22,7 +17,7 @@ namespace Data
             color = Color.ChooseColor();
         }
 
-        public int GetID()
+        override public int GetID()
         {
             return _ballID;
         }

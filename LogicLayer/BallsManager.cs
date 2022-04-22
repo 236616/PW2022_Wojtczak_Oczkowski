@@ -5,11 +5,11 @@ using InvalidDataException = LogicLayer.Exceptions.InvalidDataException;
 
 namespace LogicLayer
 {
-    public class BallsManager
+    internal class BallsManager:LogicAPI
     {
         private readonly int _mapWidth;
         private readonly int _mapHeight;
-        private readonly ObjectStorage<Ball> _objectStorage = new();
+        private readonly ObjectStorage<BallAPI> _objectStorage = new();
         private readonly int _ballMinRadius;
         private readonly int _ballMaxRadius;
 
@@ -55,7 +55,7 @@ namespace LogicLayer
             else
             {
                 Random rnd = new Random();
-                Ball newBall = new Ball(ID, x, y, rnd.Next(_ballMinRadius, _ballMaxRadius), xDirection, yDirection);
+                BallAPI newBall = BallAPI.CreateBall(ID, x, y, rnd.Next(_ballMinRadius, _ballMaxRadius), xDirection, yDirection);
                 _objectStorage.AddBall(newBall);
             }
         }
@@ -78,7 +78,7 @@ namespace LogicLayer
                 , yrand);
         }
 
-        public void SummonBalls(int amount)
+        override public void SummonBalls(int amount)
         {
             for (int i = 0; i < amount; i++)
             {
@@ -89,7 +89,7 @@ namespace LogicLayer
         public int AutoID()
         {
             int max = 0;
-            foreach (Ball ball in GetAllBalls())
+            foreach (BallAPI ball in GetAllBalls())
             {
                 if (max < ball.GetID())
                 {
@@ -100,10 +100,9 @@ namespace LogicLayer
             return max + 1;
         }
 
-        public void DoTick()
+        override public void DoTick()
         {
-            //TODO: add ball radius to condition
-            foreach (Ball ball in GetAllBalls())
+            foreach (BallAPI ball in GetAllBalls())
             {
                 if (ball.XPos + ball.XMove + ball.Radius < ball.Radius * 2 || ball.XPos + ball.XMove + ball.Radius > _mapWidth)
                 {
@@ -120,7 +119,7 @@ namespace LogicLayer
 
         public bool CheckForExistingID(int ID)
         {
-            foreach (Ball obj in _objectStorage.GetAllBalls())
+            foreach (BallAPI obj in _objectStorage.GetAllBalls())
             {
                 if (ID == obj.GetID())
                 {
@@ -131,9 +130,9 @@ namespace LogicLayer
             return false;
         }
 
-        public Ball GetBallByID(int ID)
+        public BallAPI GetBallByID(int ID)
         {
-            foreach (Ball obj in _objectStorage.GetAllBalls())
+            foreach (BallAPI obj in _objectStorage.GetAllBalls())
             {
                 if (ID == obj.GetID())
                 {
@@ -146,7 +145,7 @@ namespace LogicLayer
 
         public void RemoveBallByID(int ID)
         {
-            foreach (Ball obj in _objectStorage.GetAllBalls())
+            foreach (BallAPI obj in _objectStorage.GetAllBalls())
             {
                 if (ID == obj.GetID())
                 {
@@ -158,12 +157,12 @@ namespace LogicLayer
             throw new InvalidDataException("The ball with the given ID does not exist");
         }
 
-        public List<Ball> GetAllBalls()
+        override public List<BallAPI> GetAllBalls()
         {
             return _objectStorage.GetAllBalls();
         }
 
-        public void ClearMap()
+        override public void ClearMap()
         {
             _objectStorage.ClearStorage();
         }
