@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Data;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,49 +9,42 @@ namespace LogicLayer
 {
     public abstract class LogicAPI
     {
-        public abstract class BallAPI
-        {
-            public abstract int GetID();
-            public string color { get; set; }
-            public static BallAPI CreateBall(int ID, int xPos, int yPos, int radius, int xMov, int yMov)
-            {
-                return new Ball(ID, xPos, yPos, radius, xMov, yMov);
-            }
 
-            public int XPos { get; set; }
-            public int YPos { get; set; }
-            public int XMove { get; set; }
-            public int YMove { get; set; }
-
-            public int Radius { get; set; }
-            public int XPosition { get; set; }
-            public int YPosition { get; set; }
-        }
-
- 
-
-        public static LogicAPI CreateManager(int windowWidth, int windowHeight)
-        {
-            return new BallsManager(windowWidth, windowHeight);
-        }
-        public static BallAPI CreateBall(int ID, int xPos, int yPos, int radius, int xMov, int yMov)
-        {
-            return new Ball(ID,xPos, yPos, radius, xMov, yMov);
-        }
-
-        public static LogicAPI Create(int width, int height)
+        public static LogicAPI CreateBox(int width, int height)
         {
             Box.width = width;
             Box.height = height;
             return new BallsManager();
         }
+
         public abstract void SummonBalls(int amount);
-        
+
+        public abstract void createBalls(int amount);
+
         public abstract void DoTick();
-        public abstract List<BallAPI> GetAllBalls();
+        public abstract List<SBallAPI> GetAllBalls();
 
         public abstract void ClearMap();
-       
+
+        public object _lock = new object();
+
+        public bool isMoving { get; set; }
+
+        public List<Thread> threads;
+        public abstract void BounceIfOnEdge(DataAPI ball);
+
+        public abstract List<DataAPI> GetOldBalls();
 
     }
+    public abstract class SBallAPI
+    {
+        public static SBallAPI Create(int x, int y)
+        {
+            return new SBall(x, y);
+        }
+        virtual public int XPos { get; set; }
+        public int YPos { get; set; }
+        public int Radius { get; set; }
+    }
+
 }

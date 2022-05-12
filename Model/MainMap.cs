@@ -9,19 +9,15 @@ namespace Presentation.Model
         private int _width;
         private int _height;
 
-        public void Tick()
-        {
-            _ballsManager.DoTick();
-        }
-
+ 
         public MainMap(int w, int h)
         {
             _width = w;
             _height = h;
-            _ballsManager = LogicAPI.CreateManager(_width, _height);
+            _ballsManager = LogicAPI.CreateBox(_width, _height);
         }
 
-       public List<LogicAPI.BallAPI> GetBalls()
+       public List<SBallAPI> GetBalls()
         {
             return _ballsManager.GetAllBalls();
         }

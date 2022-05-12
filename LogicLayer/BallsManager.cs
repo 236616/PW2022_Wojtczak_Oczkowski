@@ -1,170 +1,147 @@
-﻿using System.Collections;
-using Data;
-using LogicLayer.Exceptions;
-using InvalidDataException = LogicLayer.Exceptions.InvalidDataException;
+﻿using Data;
 
 namespace LogicLayer
 {
-    internal class BallsManager:LogicAPI
+    internal class BallsManager : LogicAPI
     {
-        private readonly int _mapWidth;
-        private readonly int _mapHeight;
-        private readonly ObjectStorage<BallAPI> _objectStorage = new();
-        private readonly int _ballMinRadius;
-        private readonly int _ballMaxRadius;
-
-        public BallsManager(int mapWidth, int mapHeight)
+        internal readonly int _Radius = 15;
+        internal readonly List<DataAPI> _ballStorage = new();
+ 
+        public void assignThreads()
         {
-            _mapHeight = mapHeight;
-            _mapWidth = mapWidth;
-            _ballMinRadius = Math.Min(mapHeight, mapWidth) / 60;
-            _ballMaxRadius = Math.Max(mapWidth, mapHeight) / 30;
+            threads = new List<Thread>();
 
-        }
-
-        public int GetMapWidth()
-        {
-            return _mapWidth;
-        }
-
-        public int GetMapHeight()
-        {
-            return _mapHeight;
-        }
-
-        public int GetBallsMinRadius()
-        {
-            return _ballMinRadius;
-        }
-
-        public int GetBallsMaxRadius()
-        {
-            return _ballMaxRadius;
-        }
-
-        public void CreateBall(int ID, int x, int y, int xDirection, int yDirection)
-        {
-            if (CheckForExistingID(ID)
-               || (x < _ballMinRadius || x > _mapWidth - _ballMinRadius
-                         || y < _ballMinRadius || y > _mapHeight - _ballMinRadius
-                         || yDirection > _mapHeight - _ballMinRadius || yDirection < ((-1) * _mapHeight + _ballMinRadius)
-                         || xDirection > _mapWidth - _ballMinRadius || xDirection < ((-1) * _mapWidth + _ballMinRadius)))
+            foreach (DataAPI ball in _ballStorage)
             {
-                throw new InvalidDataException("The ball parameters entered are invalid");
-            }
-            else
-            {
-                Random rnd = new Random();
-                BallAPI newBall = BallAPI.CreateBall(ID, x, y, rnd.Next(_ballMinRadius, _ballMaxRadius), xDirection, yDirection);
-                _objectStorage.AddBall(newBall);
+                Thread t = new Thread(() =>
+                {
+                    while (isMoving)
+                    {
+                        ball.move();
+                        BounceIfOnEdge(ball);
+                        lock (_lock)
+                        {
+                            ResolveCollisionsWithBalls(ball);
+                        }
+                        Thread.Sleep(5);
+                    }
+                });
+                threads.Add(t);
             }
         }
 
-        public void GenerateRandomBall()
+        public override void SummonBalls(int amount)
+        {
+            createBalls(amount);
+            assignThreads();
+
+            if (!isMoving)
+            {
+                isMoving = true;
+                foreach (Thread t in threads)
+                {
+                    t.Start();
+                }
+            }
+        }
+
+        override public void createBalls(int amount)
         {
             Random rnd = new Random();
-            int xrand = 0, yrand = 0;
-            while (xrand == 0 && yrand == 0)
-            {
-                xrand = rnd.Next(-5, 5);
-                yrand = rnd.Next(-5, 5);
-            }
-
-
-            CreateBall(AutoID()
-                , rnd.Next(_ballMaxRadius, _mapWidth - _ballMaxRadius)
-                , rnd.Next(_ballMaxRadius, _mapHeight - _ballMaxRadius)
-                , xrand
-                , yrand);
-        }
-
-        override public void SummonBalls(int amount)
-        {
             for (int i = 0; i < amount; i++)
             {
-                GenerateRandomBall();
+                int xPos = rnd.Next(_Radius, Box.width - _Radius);
+                int yPos = rnd.Next(_Radius, Box.height - _Radius);
+                _ballStorage.Add(DataAPI.getBall(xPos, yPos));
             }
         }
 
-        public int AutoID()
+        public override void BounceIfOnEdge(DataAPI ball)
         {
-            int max = 0;
-            foreach (BallAPI ball in GetAllBalls())
+            if (ball.XPosition <= ball.Radius)            // hit left edge, go right
             {
-                if (max < ball.GetID())
-                {
-                    max = ball.GetID();
-                }
+                ball.vx = Math.Abs(ball.vx);
             }
-
-            return max + 1;
-        }
-
-        override public void DoTick()
-        {
-            foreach (BallAPI ball in GetAllBalls())
+            if (ball.XPosition >= Box.width - ball.Radius)    // hit right edge, go left
             {
-                if (ball.XPos + ball.XMove + ball.Radius < ball.Radius * 2 || ball.XPos + ball.XMove + ball.Radius > _mapWidth)
-                {
-                    ball.XMove = ball.XMove * (-1);
-                }
-                if (ball.YPos + ball.YMove + ball.Radius < ball.Radius * 2 || ball.YPos + ball.YMove + ball.Radius > _mapHeight)
-                {
-                    ball.YMove = ball.YMove * (-1);
-                }
-                ball.XPos += ball.XMove;
-                ball.YPos += ball.YMove;
+                ball.vx = Math.Abs(ball.vx) * (-1);
             }
-        }
 
-        public bool CheckForExistingID(int ID)
-        {
-            foreach (BallAPI obj in _objectStorage.GetAllBalls())
+            if (ball.YPosition <= ball.Radius)            // hit bottom edge, go up
             {
-                if (ID == obj.GetID())
-                {
-                    return true;
-                }
+                ball.vy = Math.Abs(ball.vy);
             }
-
-            return false;
-        }
-
-        public BallAPI GetBallByID(int ID)
-        {
-            foreach (BallAPI obj in _objectStorage.GetAllBalls())
+            if (ball.YPosition >= Box.height - ball.Radius)   // hit top edge, go down
             {
-                if (ID == obj.GetID())
-                {
-                    return _objectStorage.GetAllBalls().ElementAt(ID);
-                }
+                ball.vy = Math.Abs(ball.vy) * (-1);
             }
-
-            throw new InvalidDataException("The ball with the given ID does not exist");
         }
 
-        public void RemoveBallByID(int ID)
+        private void ResolveCollisionsWithBalls(DataAPI ball)
         {
-            foreach (BallAPI obj in _objectStorage.GetAllBalls())
+            DataAPI? collided = FindCollidingBall(ball);
+            if (collided != null)
             {
-                if (ID == obj.GetID())
-                {
-                    _objectStorage.RemoveBall(obj);
-                    return;
-                }
+                double newX1, newX2, newY1, newY2;
+
+                newX1 = (ball.vx * (ball.mass - collided.mass) / (ball.mass + collided.mass) + (2 * collided.mass * collided.vx) / (ball.mass + collided.mass));
+                newY1 = (ball.vy * (ball.mass - collided.mass) / (ball.mass + collided.mass) + (2 * collided.mass * collided.vy) / (ball.mass + collided.mass));
+
+                newX2 = (collided.vx * (collided.mass - ball.mass) / (ball.mass + collided.mass) + (2 * ball.mass * ball.vx) / (ball.mass + collided.mass));
+                newY2 = (collided.vy * (collided.mass - ball.mass) / (ball.mass + collided.mass) + (2 * ball.mass * ball.vy) / (ball.mass + collided.mass));
+
+                ball.vx = (int)newX1;
+                ball.vy = (int)newY1;
+                collided.vx = (int)newX2;
+                collided.vy = (int)newY2;
             }
-
-            throw new InvalidDataException("The ball with the given ID does not exist");
         }
 
-        override public List<BallAPI> GetAllBalls()
+        private DataAPI? FindCollidingBall(DataAPI ball)
         {
-            return _objectStorage.GetAllBalls();
+            foreach (DataAPI other in _ballStorage)
+            {
+                if (other == ball)
+                    continue;
+                double distance = Math.Sqrt(Math.Pow((ball.XPosition + ball.vx - other.XPosition + other.vx), 2) +
+                                            Math.Pow((ball.YPosition + ball.vy - other.YPosition + other.vy), 2));
+                if (distance <= ball.Radius + other.Radius)
+                    return other;
+            }
+            return null;
         }
 
-        override public void ClearMap()
+        public override void ClearMap()
         {
-            _objectStorage.ClearStorage();
+            isMoving = false;
+            threads.Clear();
+            _ballStorage.Clear();
         }
+
+        override public List<SBallAPI> GetAllBalls()
+        {
+            List<SBallAPI> list = new();
+            foreach (DataAPI ball in _ballStorage)
+            {
+                list.Add(new SBall(ball.XPosition, ball.YPosition));
+            }
+            return list;
+        }
+
+        override public List<DataAPI> GetOldBalls()
+        {
+            List<DataAPI> list = new();
+            foreach (DataAPI ball in _ballStorage)
+            {
+                list.Add(ball);
+            }
+            return list;
+        }
+
+        public override void DoTick()
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }

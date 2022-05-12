@@ -133,7 +133,6 @@ namespace Presentation.ViewModel
             while (PauseFlag)
             {
                 await Task.Delay(10);
-                _mainMap.Tick();
                 OnPropertyChanged("GetBalls");
             }
         }
