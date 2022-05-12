@@ -18,7 +18,7 @@ namespace Tests.LogicTest
         }
 
         [TestMethod]
-        public void ClearBallsTest()
+        public void RemoveBallsTest()
         {
             LogicAPI api = LogicAPI.CreateManager(100, 100);
 
