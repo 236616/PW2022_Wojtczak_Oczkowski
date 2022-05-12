@@ -37,6 +37,13 @@ namespace LogicLayer
         {
             return new Ball(ID,xPos, yPos, radius, xMov, yMov);
         }
+
+        public static LogicAPI Create(int width, int height)
+        {
+            Box.width = width;
+            Box.height = height;
+            return new BallsManager();
+        }
         public abstract void SummonBalls(int amount);
         
         public abstract void DoTick();

@@ -14,7 +14,6 @@ namespace LogicLayer
             XMove = xMov;
             YMove = yMov;
             Radius = radius;
-            color = Color.ChooseColor();
         }
 
         override public int GetID()

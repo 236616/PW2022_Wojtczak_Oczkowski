@@ -27,14 +27,5 @@ namespace Tests.DataTest
             Assert.IsTrue(ball.Radius >= 0);
         }
 
-        [TestMethod]
-       
-
-        public void ColorTest()
-        {
-            LogicAPI.BallAPI ball = LogicAPI.BallAPI.CreateBall(1, 0, 1, 0, 2, 3);
-            Assert.IsTrue(ball.color != "");
-            Assert.IsTrue(ball.color is not null);
-        }
-    }
+    } 
 }
