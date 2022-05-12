@@ -19,8 +19,8 @@ namespace LogicLayer
             Random rnd = new Random();
             do
             {
-                vx = rnd.Next(-3, 3);
-                vy = rnd.Next(-3, 3);
+                vx = rnd.Next(-2, 2);
+                vy = rnd.Next(-2, 2);
             } while (vx == 0 || vy == 0);
 
         }
@@ -38,6 +38,6 @@ namespace LogicLayer
         {
             XPosition += vx;
             YPosition += vy;
-        }
+        } 
     }
 }
