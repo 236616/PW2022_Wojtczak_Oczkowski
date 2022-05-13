@@ -18,10 +18,10 @@ namespace LogicLayer
                     while (isMoving)
                     {
                         ball.move();
-                        BounceIfOnEdge(ball);
+                        EdgeBounce(ball);
                         lock (_lock)
                         {
-                            ResolveCollisionsWithBalls(ball);
+                            Collisions(ball);
                         }
                         Thread.Sleep(5);
                     }
@@ -56,7 +56,8 @@ namespace LogicLayer
             }
         }
 
-        public override void BounceIfOnEdge(DataAPI ball)
+        public override void EdgeBounce
+            (DataAPI ball)
         {
             if (ball.XPosition <= ball.Radius)            // hit left edge, go right
             {
@@ -77,9 +78,9 @@ namespace LogicLayer
             }
         }
 
-        private void ResolveCollisionsWithBalls(DataAPI ball)
+        private void Collisions(DataAPI ball)
         {
-            DataAPI? collided = FindCollidingBall(ball);
+            DataAPI? collided = FindCollisions(ball);
             if (collided != null)
             {
                 double newX1, newX2, newY1, newY2;
@@ -97,7 +98,7 @@ namespace LogicLayer
             }
         }
 
-        private DataAPI? FindCollidingBall(DataAPI ball)
+        private DataAPI? FindCollisions(DataAPI ball)
         {
             foreach (DataAPI other in _ballStorage)
             {

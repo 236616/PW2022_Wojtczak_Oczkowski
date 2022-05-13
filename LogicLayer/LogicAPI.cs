@@ -31,7 +31,7 @@ namespace LogicLayer
         public bool isMoving { get; set; }
 
         public List<Thread> threads;
-        public abstract void BounceIfOnEdge(DataAPI ball);
+        public abstract void EdgeBounce(DataAPI ball);
 
         public abstract List<DataAPI> GetOldBalls();
 
