@@ -1,6 +1,7 @@
 ﻿
 using Data;
 using System.ComponentModel;
+using System.Runtime.Serialization;
 
 namespace LogicLayer
 {
@@ -9,11 +10,11 @@ namespace LogicLayer
         private readonly int _ballID;
 
 
-        internal Ball(int xPosition, int yPosition)
+        internal Ball(int xPosition, int yPosition, int ID)
         {
             XPosition = xPosition;
             YPosition = yPosition;
-
+            id = ID;
             Radius = 20;
             mass = 15;
             Random rnd = new Random();
@@ -38,6 +39,14 @@ namespace LogicLayer
         {
             XPosition += vx;
             YPosition += vy;
-        } 
+        }
+
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue(nameof(XPosition), XPosition);
+        }
+
     }
+
+
 }

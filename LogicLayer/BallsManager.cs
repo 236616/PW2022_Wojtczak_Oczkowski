@@ -6,7 +6,7 @@ namespace LogicLayer
     {
         internal readonly int _Radius = 15;
         internal readonly List<DataAPI> _ballStorage = new();
- 
+        internal readonly List<Logger> _loggerStorage = new();
         public void assignThreads()
         {
             threads = new List<Thread>();
@@ -15,13 +15,21 @@ namespace LogicLayer
             {
                 Thread t = new Thread(() =>
                 {
+                    bool flagEdge = false;
+                    bool flagCollision = false;
                     while (isMoving)
                     {
                         ball.move();
-                        EdgeBounce(ball);
+                        flagEdge = EdgeBounce(ball);
                         lock (_lock)
                         {
-                            Collisions(ball);
+                            flagCollision = Collisions(ball);
+                        }
+                        if (flagEdge || flagCollision)
+                        {
+                            _loggerStorage[ball.id].log();
+                            flagEdge = false;
+                            flagCollision = false;
                         }
                         Thread.Sleep(5);
                     }
@@ -52,33 +60,40 @@ namespace LogicLayer
             {
                 int xPos = rnd.Next(_Radius, Box.width - _Radius);
                 int yPos = rnd.Next(_Radius, Box.height - _Radius);
-                _ballStorage.Add(DataAPI.getBall(xPos, yPos));
+                DataAPI ball = DataAPI.getBall(xPos, yPos, i);
+                _ballStorage.Add(ball);
+                _loggerStorage.Add(new Logger(ball));
             }
         }
 
-        public override void EdgeBounce
-            (DataAPI ball)
+        public override bool EdgeBounce(DataAPI ball)
         {
+            bool flag = false;
             if (ball.XPosition <= ball.Radius)            // hit left edge, go right
             {
                 ball.vx = Math.Abs(ball.vx);
+                flag = true;
             }
             if (ball.XPosition >= Box.width - ball.Radius)    // hit right edge, go left
             {
                 ball.vx = Math.Abs(ball.vx) * (-1);
+                flag = true;
             }
 
             if (ball.YPosition <= ball.Radius)            // hit bottom edge, go up
             {
                 ball.vy = Math.Abs(ball.vy);
+                flag = true;
             }
             if (ball.YPosition >= Box.height - ball.Radius)   // hit top edge, go down
             {
                 ball.vy = Math.Abs(ball.vy) * (-1);
+                flag = true;
             }
+            return flag;
         }
 
-        private void Collisions(DataAPI ball)
+        private bool Collisions(DataAPI ball)
         {
             DataAPI? collided = FindCollisions(ball);
             if (collided != null)
@@ -95,7 +110,9 @@ namespace LogicLayer
                 ball.vy = (int)newY1;
                 collided.vx = (int)newX2;
                 collided.vy = (int)newY2;
+                return true;
             }
+            return false;
         }
 
         private DataAPI? FindCollisions(DataAPI ball)

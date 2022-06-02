@@ -1,15 +1,16 @@
 ﻿using LogicLayer;
 using System.ComponentModel;
+using System.Runtime.Serialization;
 
 namespace Data
 {
-    public abstract class DataAPI
+    public abstract class DataAPI : ISerializable
     {
-        public static DataAPI getBall(int x, int y)
+        public static DataAPI getBall(int x, int y, int id)
         {
-            return new Ball(x, y);
+            return new Ball(x, y, id);
         }
-
+        public int id { get; set; }
         public int XPosition { get; set; }
         public int YPosition { get; set; }
         public int Radius { get; set; }
@@ -20,6 +21,8 @@ namespace Data
         public double mass { get; set; }
 
         public abstract void move();
+
+        public abstract void GetObjectData(SerializationInfo info, StreamingContext context);
 
         public abstract event PropertyChangedEventHandler? PropertyChanged;
     }
